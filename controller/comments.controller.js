@@ -3,26 +3,19 @@ const {
   deleteCommentsByIDService,
 } = require("../service/comments.service.js");
 
-exports.getComments = (request, response) => {
+exports.getComments = (request, response, next) => {
   fetchComments()
     .then((comments) => {
-      //   console.log(comments);
       response.status(200).send({ comments });
     })
-    .catch((err) => {
-      if (err.code === "22P02") {
-        response.status(400).send({ message: "Bad Request." });
-      }
-    });
+    .catch(next);
 };
 
 exports.deleteCommentsByID = (request, response, next) => {
   const { comment_id } = request.params;
   deleteCommentsByIDService(comment_id)
     .then(() => {
-      {
-        response.status(204).send();
-      }
+      response.status(204).send();
     })
     .catch(next);
 };
