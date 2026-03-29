@@ -41,6 +41,7 @@ exports.postCommentByArticleID = (request, response, next) => {
 
 exports.getArticles = (request, response, next) => {
   const { sort_by, order_by, topic } = request.query;
+
   fetchArticles(sort_by, order_by, topic)
     .then((articles) => {
       response.status(200).send({ articles });
@@ -55,26 +56,16 @@ exports.getArticlesByID = (request, response, next) => {
   const { article_id } = request.params;
   fetchArticlesByID(article_id)
     .then((articles) => {
-      {
-        // console.log(articles);
-        response.status(200).send({ articles });
-      }
+      response.status(200).send({ articles });
     })
     .catch(next);
 };
 
 exports.getCommentsByID = (request, response, next) => {
   const { article_id } = request.params;
-
-  // if (typeof article_id !== "number") {
-  //   throw err;
-  // }.catch(next);
-
   fetchCommentsByID(article_id)
     .then((comments) => {
-      {
-        response.status(200).send({ comments });
-      }
+      response.status(200).send({ comments });
     })
     .catch(next);
 };
