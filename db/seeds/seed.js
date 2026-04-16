@@ -32,7 +32,7 @@ const seed = function ({ topicData, userData, articleData, commentData }) {
       .then(() => {
         return db.query(`CREATE TABLE articles (
         article_id SERIAL PRIMARY KEY,
-        title VARCHAR(50),
+        title VARCHAR(100),
         topic VARCHAR REFERENCES topics(slug),
         author VARCHAR REFERENCES users(username),
         body TEXT,
@@ -73,6 +73,62 @@ const seed = function ({ topicData, userData, articleData, commentData }) {
         );
 
         return db.query(insertData);
+      })
+      .then(() => {
+        const formatData = userData.map((user) => {
+          return [user.username, user.name, user.avatar_url];
+        });
+
+        const insertData = format(
+          `INSERT INTO USERS (username, name, avatar_url) VALUES %L`,
+          formatData,
+        );
+
+        return db.query(insertData);
+      })
+      .then(() => {
+        const formatData = articleData.map((article) => {
+          return [
+            article.title,
+            article.topic,
+            article.author,
+            article.body,
+            article.created_at,
+            article.votes,
+            article.article_img_url,
+          ];
+        });
+
+        const inputData = format(
+          `INSERT INTO articles (title,topic,author,body, created_at, votes, article_img_url) VALUES %L`,
+          formatData,
+        );
+
+        return db.query(inputData);
+      })
+      .then(() => {
+        const formatData = commentData.map((comment) => {
+          return [
+            comment.article_id, //we want this to be article[id]
+            comment.body,
+            comment.votes,
+            comment.author,
+            comment.created_at,
+          ];
+        });
+        /*
+    article_id INT REFERENCES articles(article_id) NOT NULL,
+          body TEXT,
+          votes INT DEFAULT 0,
+          author VARCHAR REFERENCES users(username),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          */
+
+        const inputData = format(
+          `INSERT INTO comments (article_id, body, votes,author,created_at) VALUES %L`,
+          formatData,
+        );
+        // return db.query(inputData);
       })
   );
 }; ////close of function

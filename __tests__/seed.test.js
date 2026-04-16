@@ -375,7 +375,7 @@ describe("seed", () => {
     });
   });
 
-  describe.skip("comments table", () => {
+  describe("comments table", () => {
     test("comments table exists", () => {
       return db
         .query(
