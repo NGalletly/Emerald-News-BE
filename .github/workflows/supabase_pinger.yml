@@ -1,4 +1,4 @@
-name: Supabase Keep Alive
+name: Supabase Pinger
 on:
   schedule:
     # This runs every 3 days (well within the 7-day limit)
