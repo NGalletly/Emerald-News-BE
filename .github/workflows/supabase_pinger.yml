@@ -18,6 +18,6 @@ jobs:
             exit 1
           fi
 
-          curl -i -X GET "$SUPABASE_URL/rest/v1/articles?select=id&limit=1" \
+          curl -i -X GET "$SUPABASE_URL/rest/v1/articles?select=article_id&limit=1" \
           -H "apikey: $SUPABASE_ANON_KEY" \
           -H "Authorization: Bearer $SUPABASE_ANON_KEY"
