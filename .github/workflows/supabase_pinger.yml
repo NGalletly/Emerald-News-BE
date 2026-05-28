@@ -12,8 +12,23 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        # run: |
+        #   # Perform a silent PATCH request
+        #   STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH "$SUPABASE_URL/rest/v1/pinger?id=eq.1" \
+        #   -H "apikey: $SUPABASE_ANON_KEY" \
+        #   -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+        #   -H "Content-Type: application/json" \
+        #   -H "Prefer: return=minimal" \
+        #   -d "{ \"last_ping\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\" }")
+
+        #   if [ "$STATUS_CODE" -eq 204 ] || [ "$STATUS_CODE" -eq 200 ]; then
+        #     echo "Successfully updated heartbeat at $(date). Status: $STATUS_CODE"
+        #   else
+        #     echo "ERROR: Database update failed with status $STATUS_CODE"
+        #     exit 1
+        #   fi
         run: |
-          # Perform a silent PATCH request
+          echo "Sending PATCH request to update heartbeat..."
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH "$SUPABASE_URL/rest/v1/pinger?id=eq.1" \
           -H "apikey: $SUPABASE_ANON_KEY" \
           -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
@@ -22,8 +37,17 @@ jobs:
           -d "{ \"last_ping\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\" }")
 
           if [ "$STATUS_CODE" -eq 204 ] || [ "$STATUS_CODE" -eq 200 ]; then
-            echo "Successfully updated heartbeat at $(date). Status: $STATUS_CODE"
+            echo "Successfully updated heartbeat. Status: $STATUS_CODE"
           else
             echo "ERROR: Database update failed with status $STATUS_CODE"
             exit 1
           fi
+
+          echo "Simulating organic user traffic to NC News endpoints..."
+          # Ping your main articles endpoint to generate standard API traffic volume
+          curl -s -o /dev/null "$SUPABASE_URL/rest/v1/articles?select=*" -H "apikey: $SUPABASE_ANON_KEY"
+
+          # Ping your comments endpoint
+          curl -s -o /dev/null "$SUPABASE_URL/rest/v1/comments?select=*" -H "apikey: $SUPABASE_ANON_KEY"
+
+          echo "All organic traffic simulation complete!"
